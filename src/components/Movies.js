@@ -1,35 +1,21 @@
 import React from 'react';
 import styled from 'styled-components';
+import { selectMovies } from '../features/movie/movieSlice';
+import { useSelector } from "react-redux"
 
 function Movies() {
+  const movies = useSelector(selectMovies);
   return (
     <Container>
         <h4>Recommended for You</h4>
         <Content>
-            <Wrap>
-                <img src="https://static3.srcdn.com/wordpress/wp-content/uploads/2020/09/The-Simpsons-on-a-Swing.png" />
-            </Wrap>
-            <Wrap>
-                <img src="https://static3.srcdn.com/wordpress/wp-content/uploads/2020/09/The-Simpsons-on-a-Swing.png" />
-            </Wrap>
-            <Wrap>
-                <img src="https://static3.srcdn.com/wordpress/wp-content/uploads/2020/09/The-Simpsons-on-a-Swing.png" />
-            </Wrap>
-            <Wrap>
-                <img src="https://static3.srcdn.com/wordpress/wp-content/uploads/2020/09/The-Simpsons-on-a-Swing.png" />
-            </Wrap>
-            <Wrap>
-                <img src="https://static3.srcdn.com/wordpress/wp-content/uploads/2020/09/The-Simpsons-on-a-Swing.png" />
-            </Wrap>
-            <Wrap>
-                <img src="https://static3.srcdn.com/wordpress/wp-content/uploads/2020/09/The-Simpsons-on-a-Swing.png" />
-            </Wrap>
-            <Wrap>
-                <img src="https://static3.srcdn.com/wordpress/wp-content/uploads/2020/09/The-Simpsons-on-a-Swing.png" />
-            </Wrap>
-            <Wrap>
-                <img src="https://static3.srcdn.com/wordpress/wp-content/uploads/2020/09/The-Simpsons-on-a-Swing.png" />
-            </Wrap>
+            { movies &&
+                movies.map((movie) => (
+                    <Wrap key={movie.id}>
+                        <img src={movie.cardImg} alt="Movies" />
+                    </Wrap>
+                ))
+            }
         </Content>
     </Container>
   );
