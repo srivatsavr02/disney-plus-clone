@@ -1,46 +1,84 @@
-import React from 'react';
-import { unstable_renderSubtreeIntoContainer } from 'react-dom';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
+import {useParams} from 'react-router-dom';
+import db from '../firebase';
+import { collection, getDocs } from "firebase/firestore"; 
 
-function Detail() {
-  return (
-    <Container>
-        <Background>
-            <img src="https://cdn.vox-cdn.com/thumbor/eU72waq9EjmEsOS-sMcndQrGzXc=/1400x1400/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/11604673/BO_RGB_s120_22a_cs_pub.pub16.318.jpg" />
-        </Background>
-        <ImageTitle>
-            <img src="/images/bau_poster1.svg" />
-        </ImageTitle>
-        <Controls>
-            <PlayButton>
-                <img src="/images/play-icon-black.png" />
-                <span>PLAY</span>
-            </PlayButton>
-            <TrailerButton>
-                <img src="/images/play-icon-white.png" />
-                <span>TRAILER</span>
-            </TrailerButton>
-            <AddButton>
-                <span>+</span>
-            </AddButton>
-            <GroupWatchButton>
-                <img src="/images/group-icon.png" />
-            </GroupWatchButton>
-        </Controls>
-        <SubTitle>
-            2018<span> </span>7m<span> </span>Family,  Fantasy, Kids, Animation
-        </SubTitle>
-        <Description>
-            An ageing Chinese mom gets another chance at motherhood when one of her dumplings springs to life as a lively, giggly dumpling boy.
-        </Description>
-    </Container>
-  );
+const Detail=()=> {
+    const {id} = useParams();
+    const [movie, setMovie] = useState({});
+
+
+    const fetchMovie = async (ID)=>{
+        try{
+                const querySnapshot = await getDocs(collection(db, "movies"));
+                querySnapshot.forEach(doc => {
+                    if(doc.id === ID){
+                        return setMovie((doc.data()));
+                    }
+                });
+        }catch(error){
+            alert(error.message)
+        }
+    };
+
+    useEffect(() => {
+        fetchMovie(id);
+
+        return () => {
+            setMovie({});
+          };
+
+    }, [id])
+
+    console.log(movie)
+
+    return (
+        <Container>
+            {movie && (
+                <>
+                    <Background>
+                        <img src={movie.backgroundImg} alt='Background' />
+                    </Background>
+
+                    <ImageTitle>
+                        <img src={movie.titleImg} alt='Title' />
+                    </ImageTitle>
+
+                    <Controls>
+                        <PlayButton>
+                            <img src='/images/play-icon-black.png' alt='' />
+                            <span>PLAY</span>
+                        </PlayButton>
+                        <TrailerButton>
+                            <img src='/images/play-icon-white.png' alt='' />
+                            <span>TRAILER</span>
+                        </TrailerButton>
+                        <AddButton>
+                            <span>+</span>
+                        </AddButton>
+                        <GroupWatchButton>
+                            <img src='/images/group-icon.png' alt='' />
+                        </GroupWatchButton>
+                    </Controls>
+
+                    <SubTitle>
+                        {movie.subTitle}
+                    </SubTitle>
+                    
+                    <Description>
+                        {movie.description}
+                    </Description>
+                </>
+            )}
+        </Container>
+    )
 }
 
-export default Detail;
+export default Detail
 
 const Container = styled.div`
-    min-height: calc(100vh - 70px); 
+    min-height: calc(100vh - 70px);
     padding: 0 calc(3.5vw + 5px);
     position: relative;
 `
@@ -52,11 +90,11 @@ const Background = styled.div`
     bottom: 0;
     right: 0;
     z-index: -1;
-    opacity: 0.8;
+    opacity: 0.7;
 
     img {
         width: 100%;
-        height: 100%
+        height: 100%;
         object-fit: cover;
     }
 `
@@ -66,7 +104,9 @@ const ImageTitle = styled.div`
     min-height: 170px;
     width: 35vw;
     min-width: 200px;
-    margin-top: 40px;
+    margin-top: 50px;
+    margin-bottom: 10px;
+    left: 0;
 
     img {
         width: 100%;
@@ -81,41 +121,44 @@ const Controls = styled.div`
 `
 
 const PlayButton = styled.button`
-    border-radius: 4px;
-    font-size: 15px;
+    height: 56px;
+    border: 3px solid rgba(249, 249, 249);
     padding: 0px 24px;
     margin-right: 22px;
+    border-radius: 5px;
+    font-size: 15px;
+    letter-spacing: 1.8px;
     display: flex;
     align-items: center;
-    height: 56px;
-    background-color: rgb(249, 249, 249);
-    border: none;
-    letter-spacing: 1.8px;
     cursor: pointer;
 
     &:hover {
-        background: rgb(198, 198, 198);
+        background: rgb(198, 198, 198, 0.7);
     }
 `
 
 const TrailerButton = styled(PlayButton)`
+
+    color: white;
     background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgb(249, 249, 249);
-    color: rgb(249, 249, 249);
-    text-transform: uppercase;
+    border: 1px solid rgba(249, 249, 249);
+
+    &:hover {
+        background: rgb(198, 198, 198, 0.5);
+    }
 `
 
 const AddButton = styled.button`
-    width: 44px;
     height: 44px;
+    width: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    border: 2px solid white;
-    background-color: rgba(0, 0, 0, 0.6);
-    cursor: pointer;
     margin-right: 16px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(249, 249, 249);
+    cursor: pointer;
 
     span {
         font-size: 30px;
@@ -123,29 +166,25 @@ const AddButton = styled.button`
     }
 
     &:hover {
-        background: rgb(198, 198, 198);
+        background: rgb(198, 198, 198, 0.2);
     }
 `
 
 const GroupWatchButton = styled(AddButton)`
-    background: rgb(0, 0, 0);
+    background: rgba(0, 0, 0, 0.9);
 `
 
 const SubTitle = styled.div`
-    color: rgb(249, 249, 249);
     font-size: 15px;
-    margin-top: 26px;
+    color: rgba(249, 249, 249);
     min-height: 20px;
-
-    span {
-        letter-spacing: 10px;
-    }
+    margin-top: 26px;
 `
 
 const Description = styled.div`
-    line-height: 1.4;
+    
     font-size: 20px;
     margin-top: 16px;
-    color: rgb(249, 249, 249);
-    max-width:760px;
+    max-width: 700px;
+    color: rgba(249, 249, 249);
 `
