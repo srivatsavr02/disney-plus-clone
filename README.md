@@ -2,7 +2,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Deployed with Firebase
 
-disney-plus-react-a32be.firebaseapp.com
+https://disney-plus-react-a32be.web.app/
 
 ## Available Scripts
 
